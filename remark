@@ -1,0 +1,21 @@
+1、安装 go orm 依赖包
+go get -u gorm.io/gorm
+
+# 安装对应的数据库驱动（以 MySQL 为例）
+go get -u gorm.io/driver/mysql
+
+2、如果出现网络超时，设置goproxy代理
+set GO111MODULE=on
+go env -w GOPROXY=https://goproxy.cn,direct
+
+
+3、查看go.mod 发现gorm相关依赖包已经下载好
+
+
+4、引入 gin web框架
+go get -u github.com/gin-gonic/gin
+
+
+5、安装viper
+go get github.com/spf13/viper
+实现对配置文件的管理
