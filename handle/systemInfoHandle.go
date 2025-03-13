@@ -32,14 +32,8 @@ func QuerySystemInfo(c *gin.Context) {
 	}
 	user = model.FindById(user.Id)
 	if user.Id != 0 {
-		userStr, err := json.Marshal(user)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		res := string(userStr)
-		fmt.Println(res)
-		redis.SetKey(strconv.Itoa(user.Id), res, 50*time.Second)
+		userStr, _ := json.Marshal(user)
+		redis.SetKey(strconv.Itoa(user.Id), string(userStr), 50*time.Second)
 	}
 	app.OK(c, user, "")
 
