@@ -14,7 +14,7 @@ func OK(ctx *gin.Context, data interface{}, msg string) {
 		response.Msg = "success"
 	}
 	response.Data = data
-	ctx.JSONP(http.StatusOK, response.OK())
+	ctx.JSON(http.StatusOK, response.OK())
 }
 
 func ERROR(ctx *gin.Context, data interface{}, msg string, code int) {
@@ -23,5 +23,5 @@ func ERROR(ctx *gin.Context, data interface{}, msg string, code int) {
 		response.Msg = msg
 	}
 	response.Data = data
-	ctx.JSONP(http.StatusOK, response.ERROR(code))
+	ctx.JSON(http.StatusOK, response.ERROR(code))
 }

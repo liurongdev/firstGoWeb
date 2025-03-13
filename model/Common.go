@@ -6,12 +6,12 @@ type Response struct {
 	Msg  string      `json:"msg"`
 }
 
-func (response *Response) OK() *Response {
-	response.Code = 200
-	return response
+func (res *Response) OK() *Response {
+	res.Code = 200
+	return res
 }
 
-func (response *Response) ERROR(code int) *Response {
-	response.Code = code
-	return response
+func (res *Response) ERROR(code int) *Response {
+	res.Code = code
+	return res
 }
