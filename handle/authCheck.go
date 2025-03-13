@@ -7,7 +7,6 @@ func AuthCheck() gin.HandlerFunc {
 		token := c.Request.Header.Get("token")
 		if token == "" {
 			c.AbortWithStatusJSON(400, gin.H{"message": "Authorization header required"})
-			c.Abort()
 			return
 		}
 		c.Next()

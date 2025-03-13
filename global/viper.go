@@ -1,6 +1,7 @@
 package global
 
 import (
+	"awesomeProject/middleware/redis"
 	"fmt"
 	"github.com/spf13/viper"
 )
@@ -32,5 +33,14 @@ func GetMysqlConfig() *MysqlConfig {
 	}
 	fmt.Println(config)
 	return config
+}
+
+func GetRedisConfig() *redis.RedisConfig {
+	return &redis.RedisConfig{
+		Host:     Viper.GetString("settings.redis.host"),
+		Password: Viper.GetString("settings.redis.password"),
+		Port:     Viper.GetInt("settings.redis.port"),
+		Database: Viper.GetString("settings.redis.database"),
+	}
 
 }

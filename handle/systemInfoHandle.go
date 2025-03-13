@@ -2,9 +2,13 @@ package handle
 
 import (
 	"awesomeProject/app"
+	"awesomeProject/middleware/redis"
 	"awesomeProject/model"
+	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"time"
 )
 
 type User struct {
@@ -14,20 +18,31 @@ type User struct {
 }
 
 func QuerySystemInfo(c *gin.Context) {
-	id := c.Query("id")
 	var user model.SystemUserInfo
-	if id == "" {
-		if err := c.ShouldBindJSON(&user); err != nil {
-			c.JSON(400, gin.H{"error": "绑定参数错误"})
-			return
-		}
-		user = model.FindById(user.Id)
-		app.OK(c, user, "")
-	} else {
-		intId, _ := strconv.Atoi(id)
-		user = model.FindById(intId)
-		app.OK(c, user, "")
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(400, gin.H{"error": "绑定参数错误"})
+		return
 	}
+	userStr, _ := redis.GetKey(strconv.Itoa(user.Id))
+	if userStr != "" {
+		fmt.Println("get user from redis:" + userStr)
+		json.Unmarshal([]byte(userStr), &user)
+		app.OK(c, user, "")
+		return
+	}
+	user = model.FindById(user.Id)
+	if user.Id != 0 {
+		userStr, err := json.Marshal(user)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		res := string(userStr)
+		fmt.Println(res)
+		redis.SetKey(strconv.Itoa(user.Id), res, 50*time.Second)
+	}
+	app.OK(c, user, "")
+
 }
 
 func InsertSystemUserInfo(c *gin.Context) {
