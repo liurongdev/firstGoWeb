@@ -40,7 +40,6 @@ func GetRedis() *redis.Client {
 }
 
 func SetKey(key string, value interface{}, expiration time.Duration) {
-	fmt.Println("set redis key:" + key)
 	res, err := rdb.Set(context.Background(), key, value, expiration).Result()
 	if err != nil {
 		panic(err)

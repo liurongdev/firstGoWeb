@@ -2,10 +2,10 @@ package handle
 
 import (
 	"awesomeProject/app"
+	"awesomeProject/middleware/logger"
 	"awesomeProject/middleware/redis"
 	"awesomeProject/model"
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"time"
@@ -25,14 +25,16 @@ func QuerySystemInfo(c *gin.Context) {
 	}
 	userStr, _ := redis.GetKey(strconv.Itoa(user.Id))
 	if userStr != "" {
-		fmt.Println("get user from redis:" + userStr)
+
 		json.Unmarshal([]byte(userStr), &user)
+		logger.Info("get user from redis:", user)
 		app.OK(c, user, "")
 		return
 	}
 	user = model.FindById(user.Id)
 	if user.Id != 0 {
 		userStr, _ := json.Marshal(user)
+		logger.Info("set user to redis:", userStr)
 		redis.SetKey(strconv.Itoa(user.Id), string(userStr), 50*time.Second)
 	}
 	app.OK(c, user, "")

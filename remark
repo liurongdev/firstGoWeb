@@ -19,3 +19,9 @@ go get -u github.com/gin-gonic/gin
 5、安装viper
 go get github.com/spf13/viper
 实现对配置文件的管理
+
+6、集成日志框架zap
+go get -u go.uber.org/zap
+集成 lumberjack 做日志文件的滚动
+go get -u gopkg.in/natefinch/lumberjack.v2
+

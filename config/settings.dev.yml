@@ -50,13 +50,13 @@ settings:
     log:
         compress: 1
         consolestdout: 1
-        filestdout: 0
+        filestdout: 1
         level: debug
         localtime: 1
         maxage: 30
         maxbackups: 300
         maxsize: 10240
-        path: ./logs/ferry.log
+        path: ./logs/awesomeProject.log
     public:
         islocation: 0
     redis:

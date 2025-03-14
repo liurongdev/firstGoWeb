@@ -2,6 +2,7 @@ package main
 
 import (
 	"awesomeProject/global"
+	"awesomeProject/middleware/logger"
 	"awesomeProject/middleware/redis"
 	"awesomeProject/route/user"
 	"awesomeProject/tool"
@@ -15,10 +16,10 @@ func main() {
 }
 
 func start() {
-
 	global.InitViper("settings.dev.yml", "./config")
 	global.InitMysql(global.GetMysqlConfig())
 	redis.InitRedis(global.GetRedisConfig())
+	logger.Init()
 	// 初始化 Gin 路由引擎（默认包含 Logger 和 Recovery 中间件）
 	r := gin.Default()
 	user.Registry(r)
