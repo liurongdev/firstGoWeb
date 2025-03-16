@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"awesomeProject/global"
+	"github.com/liurongdev/firstGoWeb/global"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"

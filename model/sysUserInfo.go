@@ -1,7 +1,7 @@
 package model
 
 import (
-	"awesomeProject/global"
+	"github.com/liurongdev/firstGoWeb/global"
 	"time"
 )
 

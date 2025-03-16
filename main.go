@@ -1,13 +1,13 @@
 package main
 
 import (
-	"awesomeProject/global"
-	"awesomeProject/middleware/logger"
-	"awesomeProject/middleware/redis"
-	"awesomeProject/route/user"
-	"awesomeProject/tool"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/liurongdev/firstGoWeb/global"
+	"github.com/liurongdev/firstGoWeb/middleware/logger"
+	"github.com/liurongdev/firstGoWeb/middleware/redis"
+	"github.com/liurongdev/firstGoWeb/route/user"
+	"github.com/liurongdev/firstGoWeb/tool"
 )
 
 func main() {

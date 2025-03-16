@@ -1,8 +1,8 @@
 package global
 
 import (
-	"awesomeProject/middleware/redis"
 	"fmt"
+	"github.com/liurongdev/firstGoWeb/middleware/redis"
 	"github.com/spf13/viper"
 )
 

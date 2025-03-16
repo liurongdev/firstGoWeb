@@ -1,8 +1,8 @@
 package user
 
 import (
-	"awesomeProject/handle"
 	"github.com/gin-gonic/gin"
+	"github.com/liurongdev/firstGoWeb/handle"
 )
 
 func Registry(r *gin.Engine) {

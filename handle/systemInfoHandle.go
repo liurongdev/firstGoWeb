@@ -1,12 +1,12 @@
 package handle
 
 import (
-	"awesomeProject/app"
-	"awesomeProject/middleware/logger"
-	"awesomeProject/middleware/redis"
-	"awesomeProject/model"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/liurongdev/firstGoWeb/app"
+	"github.com/liurongdev/firstGoWeb/middleware/logger"
+	"github.com/liurongdev/firstGoWeb/middleware/redis"
+	"github.com/liurongdev/firstGoWeb/model"
 	"strconv"
 	"time"
 )

@@ -1,8 +1,8 @@
 package app
 
 import (
-	"awesomeProject/model"
 	"github.com/gin-gonic/gin"
+	"github.com/liurongdev/firstGoWeb/model"
 	"net/http"
 )
 
