@@ -1,4 +1,4 @@
-module awesomeProject
+module github.com/liurongdev/firstGoWeb
 
 go 1.23.0
 
