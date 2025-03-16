@@ -3,7 +3,128 @@ package tool
 import (
 	"fmt"
 	"math"
+	"sort"
+	"strings"
 )
+
+var tmp []string
+var f [][]bool
+var res [][]string
+
+func Partition(s string) [][]string {
+	totalLen := len(s)
+	f = make([][]bool, totalLen)
+	res = make([][]string, 0)
+	tmp = make([]string, 0)
+	for i := 0; i < totalLen; i++ {
+		f[i] = make([]bool, totalLen)
+		f[i][i] = true
+
+	}
+	for i := len(s) - 1; i >= 0; i-- {
+		for j := i + 1; j < totalLen; j++ {
+			if s[i] == s[j] {
+
+				if j > i+1 {
+					f[i][j] = f[i+1][j-1]
+				} else {
+					f[i][j] = true
+				}
+
+			}
+		}
+	}
+	dfs(s, 0)
+	for _, v := range res {
+		fmt.Println(v)
+	}
+	return res
+}
+
+func dfs(s string, i int) {
+	if i == len(s) {
+		newTmp := append([]string(nil), tmp...)
+		res = append(res, newTmp)
+		return
+	}
+	for j := i; j < len(s); j++ {
+		if f[i][j] {
+			tmp = append(tmp, s[i:j+1])
+			dfs(s, j+1)
+			tmp = tmp[:len(tmp)-1]
+		}
+	}
+}
+
+func maxScore(nums []int) int {
+
+	nums2 := []int{1, 2, 3}
+
+	nums2 = append(nums, 1)
+	nums2 = append(nums, 2)
+
+	fmt.Println(nums2)
+
+	total := 0
+	sort.Ints(nums)
+	sum := 0
+	for i := len(nums) - 1; i >= 0; i-- {
+		sum += nums[i]
+		if sum > 0 {
+			total += 1
+		} else {
+			break
+		}
+	}
+
+	return total
+}
+
+func minimumCost(cost []int) int {
+	sort.Ints(cost)
+	totalCost := 0
+	i := len(cost) - 1
+	for ; i >= 1; i = i - 3 {
+		totalCost += (cost[i] + cost[i-1])
+	}
+	if i >= 0 {
+		totalCost += cost[i]
+	}
+	return totalCost
+}
+
+func calculate(s string) int {
+	x := 0
+	y := 1
+	for i := 0; i < len(s); i++ {
+		if s[i] == 'A' {
+			x = 2*x + y
+		} else if s[i] == 'B' {
+			y = 2*y + x
+		}
+	}
+	return x + y
+}
+
+func MakeFancyString(s string) string {
+	var res strings.Builder
+	for i := 0; i < len(s); {
+		c := s[i]
+		j := i + 1
+		for ; j < len(s); j++ {
+			if c != s[j] {
+				break
+			}
+		}
+		end := min(j, i+2)
+		if end > len(s) {
+			end = len(s)
+		}
+		res.WriteString(s[i:end])
+		i = j
+	}
+	return res.String()
+}
 
 func CountGoodRectangles(rectangles [][]int) int {
 	lenMap := make(map[int]int)

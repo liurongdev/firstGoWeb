@@ -30,6 +30,6 @@ func start() {
 }
 
 func test() {
-	nums := [][]int{{5, 8}, {3, 9}, {5, 12}, {16, 5}}
-	tool.CountGoodRectangles(nums)
+	//nums := [][]int{{5, 8}, {3, 9}, {5, 12}, {16, 5}}
+	tool.Partition("aab")
 }
