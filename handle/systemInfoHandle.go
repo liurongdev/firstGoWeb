@@ -34,7 +34,7 @@ func QuerySystemInfo(c *gin.Context) {
 	user = model.FindById(user.Id)
 	if user.Id != 0 {
 		userStr, _ := json.Marshal(user)
-		logger.Info("set user to redis:", userStr)
+		logger.Info("set user to redis:", string(userStr))
 		redis.SetKey(strconv.Itoa(user.Id), string(userStr), 50*time.Second)
 	}
 	app.OK(c, user, "")

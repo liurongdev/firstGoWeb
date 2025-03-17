@@ -13,5 +13,4 @@ func Registry(r *gin.Engine) {
 		userGroup.POST("/update", handle.UpdateSystemUserInfo)
 		userGroup.POST("/delete", handle.DeleteSystemUserById)
 	}
-
 }

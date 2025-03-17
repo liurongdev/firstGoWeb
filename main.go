@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/liurongdev/firstGoWeb/global"
@@ -16,6 +17,10 @@ func main() {
 }
 
 func start() {
+
+	name := flag.String("name", "wang", "用户名称")
+	fmt.Println(name)
+	flag.Parse()
 	global.InitViper("settings.dev.yml", "./config")
 	global.InitMysql(global.GetMysqlConfig())
 	redis.InitRedis(global.GetRedisConfig())
