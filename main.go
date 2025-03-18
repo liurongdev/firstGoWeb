@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/liurongdev/firstGoWeb/global"
+	pb "github.com/liurongdev/firstGoWeb/grpc/proto"
 	"github.com/liurongdev/firstGoWeb/grpc/server"
 	"github.com/liurongdev/firstGoWeb/middleware/logger"
 	"github.com/liurongdev/firstGoWeb/middleware/redis"
 	"github.com/liurongdev/firstGoWeb/route/user"
 	"github.com/liurongdev/firstGoWeb/tool"
-	"github.com/soheilhy/cmux"
+	"google.golang.org/grpc"
 	"net"
 	"net/http"
 )
@@ -21,23 +22,27 @@ func main() {
 }
 
 func start() {
-	port := global.Viper.GetString("settings.application.port")
-	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
+	port := 8081
+	fmt.Println(port)
+	listen, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		logger.Error(err.Error())
 	}
+	defer listen.Close()
 
-	mux := cmux.New(listen)
+	grpcServer := grpc.NewServer()
+	pb.RegisterHelloServiceServer(grpcServer, &server.HelloServiceServer{})
+
+	mux := http.NewServeMux()
+
+	mux.Handle("/grpc/", http.StripPrefix("/grpc", grpcServer))
+
 	// 匹配 gRPC 流量（基于 HTTP/2）
-	grpcListener := mux.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
+	//grpcListener := mux.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
 	// 匹配 HTTP 流量
-	httpListener := mux.Match(cmux.Any())
-
-	go startGinServer(httpListener)
-	go startGinServer(grpcListener)
-}
-
-func startGinServer(httpListen net.Listener) {
+	//var wait sync.WaitGroup
+	//wait.Add(1)
+	//wait.Wait()
 	name := flag.String("name", "wang", "用户名称")
 	fmt.Println(name)
 	flag.Parse()
@@ -48,17 +53,11 @@ func startGinServer(httpListen net.Listener) {
 	// 初始化 Gin 路由引擎（默认包含 Logger 和 Recovery 中间件）
 	r := gin.Default()
 	user.Registry(r)
-	fmt.Println("start success")
-	// 启动服务器（默认监听 0.0.0.0:8080）
 
-	http.Serve(httpListen, r)
-
-	//r.Run(fmt.Sprintf(":%s", port))
-
-}
-
-func startGrpcServer(grpcListen net.Listener) {
-	server.StartGRPC(grpcListen)
+	mux.Handle("/", r)
+	if err := http.Serve(listen, mux); err != nil {
+		logger.Error(err.Error())
+	}
 
 }
 
