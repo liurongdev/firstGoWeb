@@ -11,9 +11,14 @@ import (
 	"github.com/liurongdev/firstGoWeb/middleware/redis"
 	"github.com/liurongdev/firstGoWeb/route/user"
 	"github.com/liurongdev/firstGoWeb/tool"
+	"github.com/soheilhy/cmux"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/grpclog"
+	"google.golang.org/grpc/reflection"
+	"log"
 	"net"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -24,21 +29,24 @@ func main() {
 func start() {
 	port := 8081
 	fmt.Println(port)
-	listen, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	listen, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	if err != nil {
 		logger.Error(err.Error())
 	}
 	defer listen.Close()
 
 	grpcServer := grpc.NewServer()
+	reflection.Register(grpcServer)
 	pb.RegisterHelloServiceServer(grpcServer, &server.HelloServiceServer{})
 
-	mux := http.NewServeMux()
-
-	mux.Handle("/grpc/", http.StripPrefix("/grpc", grpcServer))
-
+	mux := cmux.New(listen)
 	// 匹配 gRPC 流量（基于 HTTP/2）
+	//严格显示客户端为http2格式
+	grpcListener := mux.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
 	//grpcListener := mux.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
+
+	httpListener := mux.Match(cmux.Any())
+
 	// 匹配 HTTP 流量
 	//var wait sync.WaitGroup
 	//wait.Add(1)
@@ -54,11 +62,28 @@ func start() {
 	r := gin.Default()
 	user.Registry(r)
 
-	mux.Handle("/", r)
-	if err := http.Serve(listen, mux); err != nil {
-		logger.Error(err.Error())
-	}
+	go func() {
+		logger.Info("start start gin")
+		httpServer := &http.Server{
+			Handler: r,
+		}
+		if err := httpServer.Serve(httpListener); err != nil {
+			logger.Error(err.Error())
+		}
+	}()
+	go func() {
+		grpclog.SetLoggerV2(grpclog.NewLoggerV2(os.Stdout, os.Stderr, os.Stderr))
+		logger.Info("start start grpc")
+		if err := grpcServer.Serve(grpcListener); err != nil {
+			logger.Error(err.Error())
+		}
+	}()
 
+	// 启动 cmux
+	log.Println("Starting cmux on :8081")
+	if err := mux.Serve(); err != nil {
+		log.Fatalf("Failed to serve cmux: %v", err)
+	}
 }
 
 func test() {

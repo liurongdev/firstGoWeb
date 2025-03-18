@@ -18,6 +18,7 @@ func (s *HelloServiceServer) mustEmbedUnimplementedHelloServiceServer() {
 }
 
 func (s *HelloServiceServer) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
+	fmt.Println("grpc call HelloServiceServer.sayHello", req.Name)
 	return &pb.HelloResponse{Message: "Hello, " + req.Name}, nil
 }
 
