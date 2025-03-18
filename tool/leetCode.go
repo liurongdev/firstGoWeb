@@ -7,6 +7,98 @@ import (
 	"strings"
 )
 
+func DeleteNode(root *TreeNode, key int) *TreeNode {
+	return deleteWithParent(root, nil, key)
+
+}
+
+func deleteWithParent(root *TreeNode, parent *TreeNode, key int) *TreeNode {
+	target, parent := findNode(root, parent, key)
+	if target == nil {
+		return root
+	}
+	if target.Left == nil && target.Right == nil {
+		if parent == nil {
+			return nil
+		}
+		if parent.Left == target {
+			parent.Left = nil
+		} else {
+			parent.Right = nil
+		}
+	} else if target.Left == nil && target.Right != nil {
+		if parent == nil {
+			return target.Right
+		}
+		if parent.Left == target {
+			parent.Left = target.Right
+		} else {
+			parent.Right = target.Right
+		}
+	} else if target.Right == nil && target.Left != nil {
+		if parent == nil {
+			return target.Left
+		}
+		if parent.Left == target {
+			parent.Left = target.Left
+		} else {
+			parent.Right = target.Left
+		}
+	} else {
+		nextNode := findNext(target)
+		if nextNode != nil {
+			target.Val = nextNode.Val
+			deleteWithParent(target.Right, target, nextNode.Val)
+		}
+	}
+	return root
+}
+
+func findNode(root *TreeNode, parent *TreeNode, key int) (*TreeNode, *TreeNode) {
+	if root == nil {
+		return nil, nil
+	}
+	if root.Val == key {
+		return root, parent
+	} else if key < root.Val {
+		return findNode(root.Left, root, key)
+	} else {
+		return findNode(root.Right, root, key)
+	}
+	return nil, nil
+}
+
+func findNext(root *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+	if root.Right == nil {
+		return nil
+	}
+	var next = root.Right
+	for next.Left != nil {
+		next = next.Left
+	}
+	return next
+}
+
+func findTheDifference(s string, t string) byte {
+	var m map[byte]int = make(map[byte]int)
+	for i := 0; i < len(t); i++ {
+		m[t[i]-'a']++
+	}
+
+	for i := 0; i < len(s); i++ {
+		m[s[i]-'a']--
+	}
+	for k, v := range m {
+		if v != 0 {
+			return k + 'a'
+		}
+	}
+	return 0
+}
+
 var tmp []string
 var f [][]bool
 var res [][]string
@@ -93,19 +185,6 @@ func minimumCost(cost []int) int {
 	return totalCost
 }
 
-func calculate(s string) int {
-	x := 0
-	y := 1
-	for i := 0; i < len(s); i++ {
-		if s[i] == 'A' {
-			x = 2*x + y
-		} else if s[i] == 'B' {
-			y = 2*y + x
-		}
-	}
-	return x + y
-}
-
 func MakeFancyString(s string) string {
 	var res strings.Builder
 	for i := 0; i < len(s); {
@@ -151,30 +230,9 @@ func constructRectangle(area int) []int {
 }
 
 type TreeNode struct {
-	val   int
-	left  *TreeNode
-	right *TreeNode
-}
-
-func isBalanced(root *TreeNode) bool {
-	if root == nil {
-		return true
-	}
-	leftH := Dfs(root.left)
-	rightH := Dfs(root.right)
-	if math.Abs(float64(leftH)-float64(rightH)) > 1 {
-		return false
-	}
-	return isBalanced(root.left) && isBalanced(root.right)
-}
-
-func Dfs(root *TreeNode) int {
-	if root == nil {
-		return 0
-	}
-	left := Dfs(root.left)
-	right := Dfs(root.right)
-	return max(left, right) + 1
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
 }
 
 func RemoveDuplicates(nums []int) int {

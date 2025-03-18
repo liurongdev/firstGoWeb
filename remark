@@ -25,3 +25,14 @@ go get -u go.uber.org/zap
 集成 lumberjack 做日志文件的滚动
 go get -u gopkg.in/natefinch/lumberjack.v2
 
+
+7、整合gRPC实现服务间调用
+go get -u google.golang.org/grpc
+go get -u github.com/soheilhy/cmux (实现http 和 grpc，流量)
+
+8、执行脚本报错
+
+安装如下两个插件
+go install github.com/golang/protobuf/protoc-gen-go@latest
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+

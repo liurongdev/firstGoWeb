@@ -25,7 +25,6 @@ func QuerySystemInfo(c *gin.Context) {
 	}
 	userStr, _ := redis.GetKey(strconv.Itoa(user.Id))
 	if userStr != "" {
-
 		json.Unmarshal([]byte(userStr), &user)
 		logger.Info("get user from redis:", user)
 		app.OK(c, user, "")
