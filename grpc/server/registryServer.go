@@ -13,9 +13,10 @@ type HelloServiceServer struct {
 	pb.UnimplementedHelloServiceServer
 }
 
-func (s *HelloServiceServer) mustEmbedUnimplementedHelloServiceServer() {
-	fmt.Println("mustEmbedUnimplementedHelloServiceServer")
-}
+// 已经被潜逃方法实现，不需要再实现
+//func (s *HelloServiceServer) mustEmbedUnimplementedHelloServiceServer() {
+//	fmt.Println("mustEmbedUnimplementedHelloServiceServer")
+//}
 
 func (s *HelloServiceServer) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
 	fmt.Println("grpc call HelloServiceServer.sayHello", req.Name)
