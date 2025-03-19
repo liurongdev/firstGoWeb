@@ -4,6 +4,10 @@
 // - protoc             v5.29.3
 // source: hello.proto
 
+/**
+ * 该文件作用：
+ * 定义服务接口，客户端调用，服务端注册功能
+ */
 package __
 
 import (

@@ -31,15 +31,16 @@ go get -u google.golang.org/grpc
 go get -u github.com/soheilhy/cmux (实现http 和 grpc，流量)
 
 8、执行脚本报错
-
 安装如下两个插件
-go install github.com/golang/protobuf/protoc-gen-go@latest
-go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+go install github.com/golang/protobuf/protoc-gen-go@latest  //Go 的 Protobuf 插件。
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest //Go 的 gRPC 插件。
+
+生成和 pb.go和 grpc.pb.go 文件
+protoc --go_out=. --go-grpc_out=. your_file.proto
 
 
 9、grpc脚本执行
 grpcurl -plaintext -d '{"name": "World"}'  localhost:8081 hello.HelloService/SayHello
-
 grpcurl -plaintext   localhost:8081 list
 
 

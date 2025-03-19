@@ -19,70 +19,76 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"sync"
 )
 
 func main() {
+	fmt.Println("main function call...")
 	start()
 	//test()
 }
 
+func init() {
+	fmt.Println("init function call...")
+	global.InitViper("settings.dev.yml", "./config")
+	global.InitMysql(global.GetMysqlConfig())
+	redis.InitRedis(global.GetRedisConfig())
+	logger.Init()
+	grpclog.SetLoggerV2(grpclog.NewLoggerV2(os.Stdout, os.Stderr, os.Stderr))
+}
+
 func start() {
-	port := 8081
-	fmt.Println(port)
-	listen, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
+	port := flag.String("port", "8081", "端口")
+	flag.Parse()
+	if *port == "" {
+		*port = global.Viper.GetString("settings.application.port")
+	}
+	fmt.Println("port:", *port)
+	listen, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%s", *port))
 	if err != nil {
 		logger.Error(err.Error())
 	}
 	defer listen.Close()
-
-	grpcServer := grpc.NewServer()
-	reflection.Register(grpcServer)
-	pb.RegisterHelloServiceServer(grpcServer, &server.HelloServiceServer{})
-
 	mux := cmux.New(listen)
 	// 匹配 gRPC 流量（基于 HTTP/2）
 	//严格显示客户端为http2格式
 	grpcListener := mux.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
 	//grpcListener := mux.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
-
 	httpListener := mux.Match(cmux.Any())
-
 	// 匹配 HTTP 流量
-	//var wait sync.WaitGroup
-	//wait.Add(1)
-	//wait.Wait()
-	name := flag.String("name", "wang", "用户名称")
-	fmt.Println(name)
-	flag.Parse()
-	global.InitViper("settings.dev.yml", "./config")
-	global.InitMysql(global.GetMysqlConfig())
-	redis.InitRedis(global.GetRedisConfig())
-	logger.Init()
+	var wait sync.WaitGroup
+	wait.Add(1)
+
+	go startGrpcServer(grpcListener)
+	go startGinServer(httpListener)
+	// 启动 cmux
+	logger.Info("Starting cmux on ", port)
+	if err := mux.Serve(); err != nil {
+		log.Fatalf("Failed to serve cmux: %v", err)
+	}
+	wait.Wait()
+}
+
+func startGrpcServer(listener net.Listener) {
+	logger.Info("Starting ginServer on ")
+	grpcServer := grpc.NewServer()
+	reflection.Register(grpcServer)
+	pb.RegisterHelloServiceServer(grpcServer, &server.HelloServiceServer{})
+	if err := grpcServer.Serve(listener); err != nil {
+		logger.Error(err.Error())
+	}
+}
+
+func startGinServer(listener net.Listener) {
 	// 初始化 Gin 路由引擎（默认包含 Logger 和 Recovery 中间件）
 	r := gin.Default()
 	user.Registry(r)
-
-	go func() {
-		logger.Info("start start gin")
-		httpServer := &http.Server{
-			Handler: r,
-		}
-		if err := httpServer.Serve(httpListener); err != nil {
-			logger.Error(err.Error())
-		}
-	}()
-	go func() {
-		grpclog.SetLoggerV2(grpclog.NewLoggerV2(os.Stdout, os.Stderr, os.Stderr))
-		logger.Info("start start grpc")
-		if err := grpcServer.Serve(grpcListener); err != nil {
-			logger.Error(err.Error())
-		}
-	}()
-
-	// 启动 cmux
-	log.Println("Starting cmux on :8081")
-	if err := mux.Serve(); err != nil {
-		log.Fatalf("Failed to serve cmux: %v", err)
+	httpServer := &http.Server{
+		Handler: r,
+	}
+	logger.Info("Starting ginServer on ")
+	if err := httpServer.Serve(listener); err != nil {
+		logger.Error(err.Error())
 	}
 }
 

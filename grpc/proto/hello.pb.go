@@ -4,6 +4,9 @@
 // 	protoc        v5.29.3
 // source: hello.proto
 
+/**
+ * 定义message消息的的序列化和反序列化实现
+ */
 package __
 
 import (
