@@ -1,1 +1,19 @@
-logs/
+# 忽略编译生成的二进制文件
+*.exe
+*.dll
+*.so
+
+# 忽略临时文件
+*.log
+*.tmp
+
+# 忽略 IDE 配置文件
+.vscode/
+.idea/
+
+# 忽略依赖目录
+vendor/
+
+# 忽略系统文件
+.DS_Store
+Thumbs.db
