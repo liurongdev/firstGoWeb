@@ -12,7 +12,7 @@
 .idea/
 
 
-logs/*
+/logs/
 
 # 忽略依赖目录
 vendor/
