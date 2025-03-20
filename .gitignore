@@ -11,6 +11,9 @@
 .vscode/
 .idea/
 
+
+logs/*
+
 # 忽略依赖目录
 vendor/
 
